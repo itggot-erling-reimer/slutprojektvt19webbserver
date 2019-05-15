@@ -4,15 +4,9 @@ html lang="en"
         meta charset="UTF-8"/
         meta name="viewport" content="width=device-width, initial-scale=1.0"/
         meta http-equiv="X-UA-Compatible" content="ie=edge"/
-        title Forum 19
+        title Home
     body
 
-    h1 Welcome to Forum 19!!!
-
-
-    form action="/" method="post"
-    input type="text" placeholder="username" name="username"
-    input type="password" placeholder="password" name="password"
-    button Login
-
-a href="/register" Register
+    h1 Welcome
+    -if @user
+        ==@user[2]
