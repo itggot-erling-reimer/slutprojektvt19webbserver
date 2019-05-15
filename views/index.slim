@@ -10,3 +10,13 @@ html lang="en"
     h1 Welcome
     -if @user
         ==@user[2]
+
+    form action="/logout" method="post"
+        button logout
+
+    form action="/addpost" method="post"
+        textarea# name="post" cols="30" rows="10"
+        button add
+
+    -@posts.each do |post|
+        li ==post[2]

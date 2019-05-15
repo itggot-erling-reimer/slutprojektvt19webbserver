@@ -4,16 +4,33 @@ require 'slim'
 
 
 class App < Sinatra::Base
-    enable :session
-  db = SQLite3::Database.new("db/forum19db.db") 
-
+    enable :sessions
+    db = SQLite3::Database.new("db/forum19db.db") 
 
     get "/" do
         
         @user = session[:user]
-        test = session[:test]
-        print test
+        if !@user
+            redirect "/login"
+        end
+        @posts = db.execute('SELECT * FROM posts WHERE user_id = ?', @user[0])
+    
+
         slim:index
+    end
+
+    post "/logout" do
+        session.destroy
+        redirect "/login"
+    end
+
+    post "/addpost" do
+        post = params['post']
+        db = SQLite3::Database.open('db/forum19db.db')
+        user = session[:user]
+        print user
+        db.execute("INSERT INTO posts(user_id, post) VALUES (?,?)", [user[0], post])
+        redirect '/'
     end
 
     get "/login" do
@@ -24,7 +41,7 @@ class App < Sinatra::Base
         username = params['username']
         password = params['password']
     
-        db = SQLite3::Database.open('db/forum19db.db')
+        #db = SQLite3::Database.open('db/forum19db.db')
         user = db.execute('SELECT * FROM users WHERE username = ?', [username])
     
         # if BCrypt::Password.new(user.first[2]) == password
@@ -41,7 +58,6 @@ class App < Sinatra::Base
         if user.first[3] == password
             print 'Login Succesful'
             session[:user] = user[0]
-            session[:test] = "jaaaa"
             redirect '/'
         else
             print 'Wrong username or password, please try again'
@@ -68,8 +84,6 @@ class App < Sinatra::Base
             db.execute('INSERT INTO users(username, email, password) VALUES(?,?,?)', [username, email, password])
             redirect '/login'
         end
-
-
-        db.execute("INSERT INTO users(username, password, email) VALUES (?,?,?)", [username, password, email])
+        
     end
 end
